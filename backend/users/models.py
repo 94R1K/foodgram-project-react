@@ -34,6 +34,7 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
+        verbose_name_plural = 'Пользователи'
         verbose_name = 'Пользователь'
         ordering = ['id']
 
@@ -59,6 +60,8 @@ class Follow(models.Model):
         )
 
     class Meta:
+        verbose_name_plural = 'Подписки'
+        verbose_name = 'Подписка'
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'following'),

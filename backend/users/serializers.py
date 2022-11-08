@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
+from recipes.models import Recipe
+
 from .models import CustomUser, Follow
 
 User = get_user_model()
@@ -34,7 +36,10 @@ class CurrentUserSerializer(serializers.ModelSerializer):
 class FollowListSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(
+        source='recipes.count',
+        read_only=True
+        )
 
     class Meta:
         model = User
@@ -61,16 +66,18 @@ class FollowListSerializer(serializers.ModelSerializer):
         return False
 
     def get_recipes(self, obj):
-        from recipes.serializers import RecipeImageSerializer
-        recipes = obj.recipes.all()[:3]
         request = self.context.get('request')
-        return RecipeImageSerializer(
-            recipes, many=True,
-            context={'request': request}
-            ).data
-
-    def get_recipes_count(self, obj):
-        return obj.recipes.count()
+        if request.GET.get('recipe_limit'):
+            recipe_limit = int(request.GET.get('recipe_limit'))
+            recipes = Recipe.objects.filter(
+                author=obj.author)[:recipe_limit]
+        else:
+            recipes = Recipe.objects.filter(
+                author=obj.author)
+        serializer = recipes.serializers.RecipeImageSerializer(
+            recipes, read_only=True, many=True
+        )
+        return serializer.data
 
 
 class UserFollowSerializer(serializers.ModelSerializer):

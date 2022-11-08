@@ -5,8 +5,8 @@ from .views import (DownloadShoppingCartView, FavoriteView, IngredientViewSet,
                     RecipeViewSet, ShoppingListView)
 
 router = DefaultRouter()
-router.register(r'recipes', RecipeViewSet, basename='recipes')
-router.register(r'ingredients', IngredientViewSet, basename='ingredients')
+router.register('recipes', RecipeViewSet, basename='recipes')
+router.register('ingredients', IngredientViewSet, basename='ingredients')
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -14,7 +14,7 @@ urlpatterns = [
         'recipes/download_shopping_cart/',
         DownloadShoppingCartView.as_view()),
     path(
-        'recipes/<int:favorite_id>/favorite/',
+        'recipes/<int:recipe_id>/favorite/',
         FavoriteView.as_view()),
     path(
         'recipes/<int:recipe_id>/shopping_cart/',

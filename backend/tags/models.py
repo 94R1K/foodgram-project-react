@@ -18,5 +18,9 @@ class Tag(models.Model):
         unique=True
         )
 
+    class Meta:
+        verbose_name_plural = 'Теги'
+        verbose_name = 'Тег'
+
     def __str__(self):
         return self.name

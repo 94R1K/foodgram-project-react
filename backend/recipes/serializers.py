@@ -8,6 +8,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.serializers import CurrentUserSerializer
+
 from .models import (Favorite, Ingredient, IngredientAmount, Recipe,
                      ShoppingList)
 
@@ -29,8 +30,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     def get_ingredients(self, obj):
-        recipe = obj
-        queryset = recipe.recipes.ingredients_list.all()
+        queryset = obj.recipes.ingredients_list.all()
         return IngredientAmountSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
@@ -161,36 +161,47 @@ class RecipeFullSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         request = self.context.get('request')
-        ingredients_data = validated_data.pop('ingredients')
-        tags_data = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(author=request.user, **validated_data)
+        recipe.tags.set(tags)
         recipe.save()
-        recipe.tags.set(tags_data)
-        self.create_bulk(recipe, ingredients_data)
+        self.create_bulk(recipe, ingredients)
         return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop('ingredients')
-        tags_data = validated_data.pop('tags')
-        IngredientAmount.objects.filter(recipe=instance).delete()
-        self.create_bulk(instance, ingredients_data)
-        instance.name = validated_data.pop('name')
-        instance.text = validated_data.pop('text')
-        instance.cooking_time = validated_data.pop('cooking_time')
-        if validated_data.get('image') is not None:
-            instance.image = validated_data.pop('image')
-        instance.save()
-        instance.tags.set(tags_data)
-        return instance
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+        instance.ingredients.clear()
+        self.create_bulk(instance, ingredients)
+        instance.tags.clear()
+        instance.tags.set(tags)
+        return super().update(instance, validated_data)
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
+        if not ingredients:
+            raise serializers.ValidationError(
+                'Поле с ингредиентами не может быть пустым'
+            )
+        unique_ingredients = []
         for ingredient in ingredients:
-            if int(ingredient) <= 0:
+            name = ingredient['id']
+            if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError(
-                    'Время приготовления должно быть больше 0'
-                    )
+                    f'Не корректное количество для {name}'
+                )
+            if not isinstance(ingredient['amount'], int):
+                raise serializers.ValidationError(
+                    'Количество ингредиентов должно быть целым числом'
+                )
+            if name not in unique_ingredients:
+                unique_ingredients.append(name)
+            else:
+                raise serializers.ValidationError(
+                    'В рецепте не может быть повторяющихся ингредиентов'
+                )
         return data
 
     def validate_cooking_time(self, data):

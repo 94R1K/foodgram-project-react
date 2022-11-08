@@ -1,14 +1,15 @@
 import datetime
 
-from django.shortcuts import HttpResponse, get_object_or_404
+from django.db.models import Sum
+from django.shortcuts import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, views, viewsets
+from rest_framework import views, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
 
 from .filters import IngredientFilter, RecipeFilter
-from .models import (Favorite, Ingredient, IngredientAmount, Recipe,
+from .mixins import CustomMixin
+from .models import (Favorite, Ingredient, Recipe,
                      ShoppingList)
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
@@ -45,81 +46,42 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = IngredientFilter
 
 
-class FavoriteView(views.APIView):
+class FavoriteView(CustomMixin, views.APIView):
     permission_classes = [IsAuthenticated, ]
-
-    def get(self, request, favorite_id):
-        user = request.user
-        data = {
-            'recipe': favorite_id,
-            'user': user.id
-            }
-        serializer = FavoriteSerializer(
-            data=data,
-            context={'request': request}
-            )
-        if not serializer.is_valid():
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-                )
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, favorite_id):
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=favorite_id)
-        Favorite.objects.filter(user=user, recipe=recipe).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    serializer_class = FavoriteSerializer
+    model_class = Favorite
 
 
-class ShoppingListView(views.APIView):
+class ShoppingListView(CustomMixin, views.APIView):
     permission_classes = [IsAuthenticated, ]
-
-    def get(self, request, recipe_id):
-        user = request.user
-        data = {
-            'recipe': recipe_id,
-            'user': user.id
-            }
-        context = {'requset': request}
-        serializer = ShoppingListSerializer(data=data,
-                                            context=context)
-        if not serializer.is_valid():
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-                )
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete(self, request, recipe_id):
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        ShoppingList.objects.filter(user=user, recipe=recipe).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    serializer_class = ShoppingListSerializer
+    model_class = ShoppingList
 
 
 class DownloadShoppingCartView(views.APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
-        shopping_list = {}
         user = request.user
-        ingredients = IngredientAmount.objects.filter(
-            recipe__purchases__user=user
-            )
-        for ingredient in ingredients:
-            amount = ingredient.amount
-            name = ingredient.ingredient.name
-            measurement_unit = ingredient.ingredient.measurement_unit
-            if name not in shopping_list:
-                shopping_list[name] = {
+        recipes = Recipe.objects.filter(
+            is_favorited__user=user,
+            is_favorited__is_in_shopping_cart=True
+        )
+        ingredients = recipes.values(
+            'ingredients__name',
+            'ingredients__measurement_unit__name').order_by(
+            'ingredients__name').annotate(
+            ingredients_total=Sum('ingredient_amounts__amount')
+        )
+        shopping_list = {}
+        for item in ingredients:
+            name = item.get('ingredients__name')
+            amount = str(item.get('ingredients_total'))
+            measurement_unit = item['ingredients__measurement_unit__name']
+            shopping_list[name] = {
                     'measurement_unit': measurement_unit,
                     'amount': amount
-                    }
-            else:
-                shopping_list[name]['amount'] += amount
+                }
         main_list = ([f"* {item}:{value['amount']}"
                       f"{value['measurement_unit']}\n"
                       for item, value in shopping_list.items()])
