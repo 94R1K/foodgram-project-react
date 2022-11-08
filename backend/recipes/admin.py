@@ -15,7 +15,7 @@ class FavoriteAdmin(admin.ModelAdmin):
         'user__username',
         'user__email',
         'recipe__name'
-    )
+        )
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -23,7 +23,7 @@ class IngredientAdmin(admin.ModelAdmin):
         'id',
         'name',
         'measurement_unit'
-    )
+        )
     search_fields = ('name',)
     list_filter = ('name', )
     empty_value_display = '-пусто-'
@@ -35,7 +35,7 @@ class IngredientAmountAdmin(admin.ModelAdmin):
         'ingredient',
         'recipe',
         'amount'
-    )
+        )
     search_fields = ('recipe__name', 'ingredient__name')
 
 
