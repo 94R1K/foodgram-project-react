@@ -4,6 +4,20 @@ from .models import (Favorite, Ingredient, IngredientAmount, Recipe,
                      ShoppingList)
 
 
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'recipe',
+        'added'
+        )
+    search_fields = (
+        'user__username',
+        'user__email',
+        'recipe__name'
+    )
+
+
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -13,6 +27,16 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('name', )
     empty_value_display = '-пусто-'
+
+
+class IngredientAmountAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'ingredient',
+        'recipe',
+        'amount'
+    )
+    search_fields = ('recipe__name', 'ingredient__name')
 
 
 class IngredientsInline(admin.TabularInline):
@@ -41,8 +65,22 @@ class RecipeAdmin(admin.ModelAdmin):
     ingredients.short_description = 'Ингредиенты'
 
 
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Favorite)
+class ShoppingListAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'recipe',
+        'added'
+        )
+    search_fields = (
+        'user__username',
+        'user__email',
+        'recipe__name'
+        )
+
+
+admin.site.register(Favorite, FavoriteAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(IngredientAmount)
-admin.site.register(ShoppingList)
+admin.site.register(IngredientAmount, IngredientAmountAdmin)
+admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(ShoppingList, ShoppingListAdmin)
