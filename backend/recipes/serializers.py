@@ -180,6 +180,11 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def validate(self, data):
+        cooking_time = self.initial_data.get('cooking_time')
+        if int(cooking_time) <= 0:
+            raise serializers.ValidationError(
+                'Время приготовления должно быть больше 0'
+            )
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError(
@@ -187,7 +192,7 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             )
         unique_ingredients = []
         for ingredient in ingredients:
-            name = ingredient['id']
+            name = ingredient['id']['name']
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError(
                     f'Не корректное количество для {name}'
@@ -201,14 +206,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             else:
                 raise serializers.ValidationError(
                     'В рецепте не может быть повторяющихся ингредиентов'
-                )
-        return data
-
-    def validate_cooking_time(self, data):
-        cooking_time = self.initial_data.get('cooking_time')
-        if int(cooking_time) <= 0:
-            raise serializers.ValidationError(
-                'Время приготовления должно быть больше 0'
                 )
         return data
 

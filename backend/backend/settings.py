@@ -24,15 +24,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'django_filters',
-    'rest_framework.authtoken',
+    'colorfield',
     'djoser',
     'users.apps.UsersConfig',
     'tags.apps.TagsConfig',
     'recipes.apps.RecipesConfig',
-    # 'drf_spectacular',
-    # 'colorfield',
 ]
 
 MIDDLEWARE = [
