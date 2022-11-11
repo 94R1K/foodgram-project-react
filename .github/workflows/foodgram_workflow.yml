@@ -67,7 +67,7 @@ jobs:
               sudo docker-compose stop
               sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
               sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
-              sudo docker-compose rm web
+              sudo docker-compose down -v
               touch .env
               echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
               echo DB_NAME=${{ secrets.DB_NAME }} >> .env
@@ -75,7 +75,12 @@ jobs:
               echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
               echo DB_HOST=${{ secrets.DB_HOST }} >> .env
               echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-              sudo docker-compose up -d
+              sudo docker-compose up -d --build
+              sudo docker-compose exec -T backend python manage.py makemigrations users
+              sudo docker-compose exec -T backend python manage.py makemigrations tags
+              sudo docker-compose exec -T backend python manage.py makemigrations recipes
+              sudo docker-compose exec -T backend python manage.py migrate --noinput
+              sudo docker-compose exec -T backend python manage.py collectstatic --no-input
     send_message:
       name: Send message to Telegram
       runs-on: ubuntu-latest
