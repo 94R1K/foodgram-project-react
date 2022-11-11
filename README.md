@@ -2,6 +2,10 @@
 
 ![example workflow](https://github.com/94R1K/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
+# Развернутый проект можно посмотреть по ссылкам:
+http://158.160.6.170 \
+http://158.160.6.170/admin/
+
 # Социальная сеть для любителей Кулинарии: «Foodgram»
 
 ## Описание
