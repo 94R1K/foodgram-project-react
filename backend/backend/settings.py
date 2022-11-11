@@ -7,7 +7,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', default='*ude%#7!h&^bhpml7ld9(pcbq@l0%a1-r(c))t%pevw7gy9d8n')
 
 DEBUG = False
 
@@ -77,7 +77,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backend.urls'
 CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOWED_ORIGINS = [
-    'http://158.160.6.170:3000',
+    'http://158.160.6.170:8000',
 ]
 
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")

@@ -19,6 +19,8 @@ services:
   backend:
     image: y4r1k/foodgram-backend:latest
     restart: always
+    expose:
+      - 8000
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/

@@ -3,7 +3,6 @@ name: Foodgram workflow
 on: push
 
 jobs:
-
     tests:
       name: Test Project
       runs-on: ubuntu-latest
@@ -37,12 +36,20 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Push to Docker Hub
+      - name: Push to Docker Hub backend
         uses: docker/build-push-action@v2
         with:
           push: true
-          context: ./backend/
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
+          context: backend
+          file: backend/Dockerfile
+      - name: Push to Docker Hub frontend
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
+          context: frontend
+          file: frontend/Dockerfile
     deploy:
       name: Deploy to Server
       runs-on: ubuntu-latest
