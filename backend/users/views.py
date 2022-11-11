@@ -26,7 +26,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(self.request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-        
+
 class FollowView(views.APIView):
     permission_classes = [IsAuthenticated, ]
 
