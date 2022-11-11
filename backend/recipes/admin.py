@@ -10,12 +10,12 @@ class FavoriteAdmin(admin.ModelAdmin):
         'user',
         'recipe',
         'added'
-        )
+    )
     search_fields = (
         'user__username',
         'user__email',
         'recipe__name'
-        )
+    )
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -23,7 +23,7 @@ class IngredientAdmin(admin.ModelAdmin):
         'id',
         'name',
         'measurement_unit'
-        )
+    )
     search_fields = ('name',)
     list_filter = ('name', )
     empty_value_display = '-пусто-'
@@ -35,7 +35,7 @@ class IngredientAmountAdmin(admin.ModelAdmin):
         'ingredient',
         'recipe',
         'amount'
-        )
+    )
     search_fields = ('recipe__name', 'ingredient__name')
 
 
@@ -52,7 +52,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'text',
         'is_favorited',
         'ingredients',
-        )
+    )
     search_fields = ('author', 'name')
     list_filter = ('name', 'author', 'tags')
     empty_value_display = '-пусто-'
@@ -71,12 +71,12 @@ class ShoppingListAdmin(admin.ModelAdmin):
         'user',
         'recipe',
         'added'
-        )
+    )
     search_fields = (
         'user__username',
         'user__email',
         'recipe__name'
-        )
+    )
 
 
 admin.site.register(Favorite, FavoriteAdmin)

@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
         'password',
         'is_staff',
         'is_active',
-        )
+    )
     ordering = ('email',)
     search_fields = ('username', 'email',)
     list_filter = ('first_name', 'email')

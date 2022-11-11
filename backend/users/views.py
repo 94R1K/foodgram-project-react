@@ -35,11 +35,11 @@ class FollowView(views.APIView):
         data = {
             'following': following_id,
             'user': user.id
-            }
+        }
         serializer = UserFollowSerializer(
             data=data,
             context={'request': request}
-            )
+        )
         if not serializer.is_valid():
             return Response(
                 serializer.errors,

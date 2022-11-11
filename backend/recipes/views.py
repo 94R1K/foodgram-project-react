@@ -79,9 +79,9 @@ class DownloadShoppingCartView(views.APIView):
             amount = str(item.get('ingredients_total'))
             measurement_unit = item['ingredients__measurement_unit__name']
             shopping_list[name] = {
-                    'measurement_unit': measurement_unit,
-                    'amount': amount
-                }
+                'measurement_unit': measurement_unit,
+                'amount': amount
+            }
         main_list = ([f"* {item}:{value['amount']}"
                       f"{value['measurement_unit']}\n"
                       for item, value in shopping_list.items()])

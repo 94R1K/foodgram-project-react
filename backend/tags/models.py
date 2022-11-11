@@ -6,17 +6,17 @@ class Tag(models.Model):
         'Имя тега',
         max_length=128,
         unique=True
-        )
+    )
     color = models.CharField(
         'Цвет',
         max_length=7,
         unique=True
-        )
+    )
     slug = models.CharField(
         'Ссылка',
         max_length=128,
         unique=True
-        )
+    )
 
     class Meta:
         verbose_name_plural = 'Теги'

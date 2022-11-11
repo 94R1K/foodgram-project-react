@@ -22,7 +22,7 @@ class CurrentUserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'password'
-            )
+        )
         extra_kwargs = {"password": {'write_only': True}}
 
     def get_is_subscribed(self, obj):
@@ -39,7 +39,7 @@ class FollowListSerializer(serializers.ModelSerializer):
     recipes_count = serializers.IntegerField(
         source='recipes.count',
         read_only=True
-        )
+    )
 
     class Meta:
         model = User
@@ -52,7 +52,7 @@ class FollowListSerializer(serializers.ModelSerializer):
             'is_subscribed',
             'recipes',
             'recipes_count'
-            )
+        )
 
     def get_is_subscribed(self, user):
         current_user = self.context.get('current_user')
@@ -85,11 +85,11 @@ class UserFollowSerializer(serializers.ModelSerializer):
         slug_field='id',
         queryset=User.objects.all(),
         default=serializers.CurrentUserDefault()
-        )
+    )
     following = serializers.SlugRelatedField(
         slug_field='id',
         queryset=User.objects.all(),
-        )
+    )
 
     class Meta:
         model = CustomUser
@@ -97,8 +97,8 @@ class UserFollowSerializer(serializers.ModelSerializer):
         validators = UniqueTogetherValidator(
             queryset=User.objects.all(),
             fields=('user', 'following'),
-            message=f'Такая подписка уже существует!'
-            )
+            message='Такая подписка уже существует!'
+        )
 
     def validate(self, data):
         request = self.context['request']
@@ -113,4 +113,4 @@ class UserFollowSerializer(serializers.ModelSerializer):
         return FollowListSerializer(
             instance.following,
             context={'request': request}
-            ).data
+        ).data

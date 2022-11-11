@@ -60,7 +60,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'image',
             'text',
             'cooking_time'
-            )
+        )
 
 
 class RecipeImageSerializer(serializers.ModelSerializer):
@@ -73,7 +73,7 @@ class RecipeImageSerializer(serializers.ModelSerializer):
             'name',
             'image',
             'cooking_time'
-            )
+        )
 
     def get_image(self, obj):
         request = self.context.get('request')
@@ -89,24 +89,24 @@ class IngredientSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'measurement_unit'
-            )
+        )
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient',
         read_only=True
-        )
+    )
     name = serializers.SlugRelatedField(
         slug_field='name',
         source='ingredient',
         read_only=True
-        )
+    )
     measurement_unit = serializers.SlugRelatedField(
         slug_field='measurement_unit',
         source='ingredient',
         read_only=True
-        )
+    )
 
     class Meta:
         model = IngredientAmount
@@ -117,7 +117,7 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient',
         queryset=Ingredient.objects.all()
-        )
+    )
     amount = serializers.IntegerField()
 
     class Meta:
@@ -125,14 +125,14 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'amount'
-            )
+        )
 
 
 class RecipeFullSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
-        )
+    )
     author = CurrentUserSerializer(read_only=True)
     ingredients = AddToIngredientAmountSerializer(many=True)
     image = Base64ImageField(max_length=None, use_url=True)
@@ -149,14 +149,14 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             'image',
             'text',
             'cooking_time'
-            )
+        )
 
     def create_bulk(self, recipe, ingredients_data):
         IngredientAmount.objects.bulk_create([IngredientAmount(
             ingredient=ingredient['ingredient'],
             recipe=recipe,
             amount=ingredient['amount']
-            ) for ingredient in ingredients_data])
+        ) for ingredient in ingredients_data])
 
     @transaction.atomic
     def create(self, validated_data):
@@ -214,7 +214,7 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         data = RecipeSerializer(
             instance,
             context={'request': request}
-            ).data
+        ).data
         return data
 
 
@@ -225,21 +225,21 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = (
             'user',
             'recipe'
-            )
+        )
         validators = [
             UniqueTogetherValidator(
                 queryset=Favorite.objects.all(),
                 fields=('user', 'recipe'),
                 message='Рецепт уже добавлен в избранное'
-                )
-            ]
+            )
+        ]
 
     def to_representation(self, instance):
         request = self.context['request']
         return RecipeImageSerializer(
             instance.recipe,
             context={'request': request}
-            ).data
+        ).data
 
 
 class ShoppingListSerializer(FavoriteSerializer):
@@ -252,12 +252,12 @@ class ShoppingListSerializer(FavoriteSerializer):
                 queryset=ShoppingList.objects.all(),
                 fields=('user', 'recipe'),
                 message='Рецепт уже добавлен в список покупок'
-                )
-            ]
+            )
+        ]
 
     def to_representation(self, instance):
         request = self.context.get('request')
         return RecipeImageSerializer(
             instance.recipe,
             context={'request': request}
-            ).data
+        ).data

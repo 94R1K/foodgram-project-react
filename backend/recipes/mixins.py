@@ -14,7 +14,7 @@ class CustomMixin:
         data = {
             'recipe': recipe_id,
             'user': user
-            }
+        }
         context = {'request': request}
         serializer = self.serializer_class(
             data=data,
