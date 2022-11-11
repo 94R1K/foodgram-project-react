@@ -1,20 +1,10 @@
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status, views, viewsets
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import generics, status, views
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import CustomUser, Follow
-from .serializers import (CurrentUserSerializer, FollowListSerializer,
-                          UserFollowSerializer)
-
-User = get_user_model()
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = CurrentUserSerializer
-    permission_classes = (AllowAny, )
+from .serializers import FollowListSerializer, UserFollowSerializer
 
 
 class FollowView(views.APIView):
