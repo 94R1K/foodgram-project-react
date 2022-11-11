@@ -3,7 +3,6 @@ name: Foodgram workflow
 on: push
 
 jobs:
-
     tests:
       name: Test Project
       runs-on: ubuntu-latest
