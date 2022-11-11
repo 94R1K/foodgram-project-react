@@ -24,7 +24,6 @@ django + gunicorn и контейнер nginx
 [![Yandex.Cloud](https://img.shields.io/badge/-Yandex.Cloud-464646?style=flat-square&logo=Yandex.Cloud)](https://cloud.yandex.ru/)
 
 ## Kак запустить
-
 ### Клонируем проект:
 git clone https://github.com/94R1K/foodgram-project-react.git
 
