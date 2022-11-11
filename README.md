@@ -1,5 +1,4 @@
 ### [![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=Социальная+сеть+«Foodgram»+by+Y4R1K)](https://git.io/typing-svg)
-
 ![example workflow](https://github.com/94R1K/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
 # Социальная сеть для любителей Кулинарии: «Foodgram»
