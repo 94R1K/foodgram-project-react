@@ -38,15 +38,16 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'users.CustomUser'
 
 DJOSER = {
-    'LOGIN_FIELD': 'email',
+    "LOGIN_FIELD": 'email',
     'USER_ID_FIELD': 'id',
     'PASSWORD_RESET_CONFIRM_URL': 'set_password/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,
+    "SEND_ACTIVATION_EMAIL": False,
+    'HIDE_USERS': False,
     'SERIALIZERS': {
+
         'user': 'users.serializers.CurrentUserSerializer',
         'current_user': 'users.serializers.CurrentUserSerializer',
     },
-    'HIDE_USERS': False,
     'PERMISSIONS': {
         'activation': ['rest_framework.permissions.AllowAny'],
         'password_reset_confirm': ['rest_framework.permissions.AllowAny'],
