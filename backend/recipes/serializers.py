@@ -22,10 +22,34 @@ class Base64ImageField(serializers.ImageField):
         return super().to_internal_value(data)
 
 
+class IngredientAmountSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        source='ingredient',
+        read_only=True
+    )
+    name = serializers.SlugRelatedField(
+        slug_field='name',
+        source='ingredient',
+        read_only=True
+    )
+    measurement_unit = serializers.SlugRelatedField(
+        slug_field='measurement_unit',
+        source='ingredient',
+        read_only=True
+    )
+
+    class Meta:
+        model = IngredientAmount
+        fields = '__all__'
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
-    ingredients = serializers.SerializerMethodField()
+    ingredients = IngredientAmountSerializer(
+        source='ingredient_amounts__ingredient',
+        read_only=True, many=True
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -43,10 +67,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time'
         )
-
-    def get_ingredients(self, obj):
-        queryset = obj.recipes.ingredients_list.all()
-        return IngredientAmountSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
@@ -90,27 +110,6 @@ class IngredientSerializer(serializers.ModelSerializer):
             'name',
             'measurement_unit'
         )
-
-
-class IngredientAmountSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        source='ingredient',
-        read_only=True
-    )
-    name = serializers.SlugRelatedField(
-        slug_field='name',
-        source='ingredient',
-        read_only=True
-    )
-    measurement_unit = serializers.SlugRelatedField(
-        slug_field='measurement_unit',
-        source='ingredient',
-        read_only=True
-    )
-
-    class Meta:
-        model = IngredientAmount
-        fields = '__all__'
 
 
 class AddToIngredientAmountSerializer(serializers.ModelSerializer):
