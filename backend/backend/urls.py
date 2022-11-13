@@ -10,7 +10,7 @@ urlpatterns = [
     path('api/', include('tags.urls')),
     path('api/', include('recipes.urls')),
     path(
-        'redoc/',
+        'api/redoc/',
         TemplateView.as_view(template_name='redoc.html'),
         name='redoc'
     ),
