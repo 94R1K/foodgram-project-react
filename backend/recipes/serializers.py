@@ -29,6 +29,21 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'tags',
+            'author',
+            'ingredients',
+            'is_favorited',
+            'is_in_shopping_cart',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
+
     def get_ingredients(self, obj):
         queryset = obj.recipes.ingredients_list.all()
         return IngredientAmountSerializer(queryset, many=True).data
@@ -46,21 +61,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             return False
         user = request.user
         return ShoppingList.objects.filter(recipe=obj, user=user).exists()
-
-    class Meta:
-        model = Recipe
-        fields = (
-            'id',
-            'tags',
-            'author',
-            'ingredients',
-            'is_favorited',
-            'is_in_shopping_cart',
-            'name',
-            'image',
-            'text',
-            'cooking_time'
-        )
 
 
 class RecipeImageSerializer(serializers.ModelSerializer):
@@ -164,8 +164,8 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(author=request.user, **validated_data)
-        recipe.tags.set(tags)
         recipe.save()
+        recipe.tags.set(tags)
         self.create_bulk(recipe, ingredients)
         return recipe
 
