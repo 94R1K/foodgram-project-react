@@ -7,6 +7,7 @@ from rest_framework import serializers, validators
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.serializers import CurrentUserSerializer
+
 from .models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
                      ShoppingCart)
 
