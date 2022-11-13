@@ -20,8 +20,6 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         upload_to='media/',
-        null=False,
-        default=None,
         verbose_name='Изображение'
     )
     text = models.TextField(
@@ -45,6 +43,7 @@ class Recipe(models.Model):
         related_name='recipes'
     )
     cooking_time = models.PositiveSmallIntegerField(
+        null=False,
         default=1,
         validators=[MinValueValidator(1)],
         verbose_name='Время приготовления'
