@@ -55,11 +55,10 @@ CORS_ALLOWED_ORIGINS = [
     'http://158.160.6.170:8000',
 ]
 
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIR],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
