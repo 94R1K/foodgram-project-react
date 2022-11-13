@@ -1,7 +1,22 @@
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, IngredientAmount, Recipe,
-                     ShoppingList)
+from .models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
+                     ShoppingCart)
+
+
+class IngredientsInRecipeInline(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 1
+
+
+class IngredientsInRecipeAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'ingredient',
+        'recipe',
+        'amount'
+    )
+    search_fields = ('recipe__name', 'ingredient__name')
 
 
 class FavoriteAdmin(admin.ModelAdmin):
@@ -18,7 +33,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     )
 
 
-class IngredientAdmin(admin.ModelAdmin):
+class IngredientsAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
@@ -29,29 +44,12 @@ class IngredientAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-class IngredientAmountAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'ingredient',
-        'recipe',
-        'amount'
-    )
-    search_fields = ('recipe__name', 'ingredient__name')
-
-
-class IngredientsInline(admin.TabularInline):
-    model = Ingredient
-
-
 class RecipeAdmin(admin.ModelAdmin):
+    inlines = (IngredientsInRecipeInline,)
     list_display = (
         'id',
         'author',
         'name',
-        'image',
-        'text',
-        'is_favorited',
-        'ingredients',
     )
     search_fields = ('author', 'name')
     list_filter = ('name', 'author', 'tags')
@@ -65,7 +63,7 @@ class RecipeAdmin(admin.ModelAdmin):
     ingredients.short_description = 'Ингредиенты'
 
 
-class ShoppingListAdmin(admin.ModelAdmin):
+class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
@@ -80,7 +78,7 @@ class ShoppingListAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Favorite, FavoriteAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(IngredientAmount, IngredientAmountAdmin)
+admin.site.register(Ingredient, IngredientsAdmin)
+admin.site.register(IngredientsInRecipe, IngredientsInRecipeAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(ShoppingList, ShoppingListAdmin)
+admin.site.register(ShoppingCart, ShoppingCartAdmin)

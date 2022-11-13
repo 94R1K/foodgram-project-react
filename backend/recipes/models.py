@@ -25,14 +25,13 @@ class Recipe(models.Model):
         verbose_name='Изображение'
     )
     text = models.TextField(
-        max_length=1000,
         verbose_name='Описание'
     )
     ingredients = models.ManyToManyField(
         'Ingredient',
-        through='IngredientAmount',
-        verbose_name='Ингредиенты',
-        related_name='ingredients'
+        through='IngredientsInRecipe',
+        through_fields=('recipe', 'ingredient'),
+        verbose_name='Ингредиенты'
     )
     pub_date = models.DateTimeField(
         'Дата публикации',
@@ -41,8 +40,9 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
+        db_index=True,
         verbose_name='Хэштег',
-        related_name='tags'
+        related_name='recipes'
     )
     cooking_time = models.PositiveSmallIntegerField(
         default=1,
@@ -61,15 +61,12 @@ class Recipe(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=200,
-        blank=False,
-        null=False,
+        max_length=255,
+        db_index=True,
         verbose_name='Название ингредиента'
     )
     measurement_unit = models.CharField(
-        max_length=200,
-        blank=False,
-        null=False,
+        max_length=50,
         verbose_name='Единица измерения'
     )
 
@@ -88,18 +85,18 @@ class Ingredient(models.Model):
         return f'{self.name}, {self.measurement_unit}'
 
 
-class IngredientAmount(models.Model):
+class IngredientsInRecipe(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        verbose_name='Ингридиент',
-        related_name='ingredient_amounts'
+        verbose_name='Рецепты',
+        related_name='ingredients_list'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        verbose_name='Рецепт',
-        related_name='ingredient_amounts'
+        verbose_name='Ингредиенты',
+        related_name='ingredient_in_recipe'
     )
     amount = models.PositiveSmallIntegerField(
         default=1,
@@ -113,10 +110,11 @@ class IngredientAmount(models.Model):
                 fields=['recipe', 'ingredient'],
                 name='unique_recipe_ingredient')
         ]
-        verbose_name = 'Количество'
+        verbose_name = 'Ингредиенты рецепта'
+        verbose_name_plural = 'Ингредиенты рецептов'
 
     def __str__(self):
-        return f'{self.ingredient} в {self.recipe}'
+        return f'{self.recipe} - {self.ingredient}'
 
 
 class Favorite(models.Model):
@@ -127,7 +125,7 @@ class Favorite(models.Model):
     )
     recipe = models.ForeignKey(
         Recipe,
-        related_name='favorites',
+        related_name='users_favorites',
         on_delete=models.CASCADE
     )
     added = models.DateTimeField(
@@ -146,20 +144,20 @@ class Favorite(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user} добавил в избранное {self.recipe.name}'
+        return f'{self.user} added {self.recipe.name} to favorite'
 
 
-class ShoppingList(models.Model):
+class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
-        verbose_name='Пользователь',
-        related_name='user_shopping_list',
+        verbose_name='Список покупок',
+        related_name='shopping_cart',
         on_delete=models.CASCADE
     )
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Покупка',
-        related_name='purchases',
+        related_name='shopping_cart',
         on_delete=models.CASCADE
     )
     added = models.DateTimeField(
@@ -178,4 +176,4 @@ class ShoppingList(models.Model):
         ]
 
     def __str__(self):
-        return f'У {self.user} в списке покупок: {self.recipe}'
+        return f'{self.user} added {self.recipe} in shopping cart'

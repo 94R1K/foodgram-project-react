@@ -23,7 +23,6 @@ class CurrentUserSerializer(serializers.ModelSerializer):
             'last_name',
             'password'
         )
-        extra_kwargs = {"password": {'write_only': True}}
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
