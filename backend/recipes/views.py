@@ -40,7 +40,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = [AllowAny, ]
     pagination_class = None
     filter_backends = [DjangoFilterBackend, ]
     filter_class = IngredientFilter
