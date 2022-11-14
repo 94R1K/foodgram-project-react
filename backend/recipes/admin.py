@@ -52,19 +52,18 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'image',
         'text',
-        'is_favorited',
-        'ingredients',
     )
-    search_fields = ('author', 'name')
+    search_fields = (
+        'name',
+        'author__username',
+        'author__email'
+    )
     list_filter = ('name', 'author', 'tags')
+    readonly_fields = ('is_favorited',)
     empty_value_display = '-пусто-'
 
-    def is_favorited(self, obj):
-        return obj.favorites.count()
-
-    def ingredients(self, obj):
-        return list(obj.ingredients.all())
-    ingredients.short_description = 'Ингредиенты'
+    def is_favorited(self, instance):
+        return instance.favorite_recipes.count()
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):
