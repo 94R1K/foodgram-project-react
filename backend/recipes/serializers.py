@@ -46,7 +46,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class AddIngredientSerializer(serializers.ModelSerializer):
-    name = serializers.PrimaryKeyRelatedField(
+    id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
     amount = serializers.IntegerField()
@@ -54,7 +54,7 @@ class AddIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientsInRecipe
         fields = (
-            'name',
+            'id',
             'amount'
         )
 
@@ -131,10 +131,9 @@ class AddRecipeSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        request = self.context.get('request')
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        recipe = Recipe.objects.create(author=request.user, **validated_data)
+        recipe = Recipe.objects.create(**validated_data)
         recipe.save()
         recipe.tags.set(tags)
         self.create_bulk(recipe, ingredients)
@@ -163,7 +162,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
             )
         unique_ingredients = []
         for ingredient in ingredients:
-            name = ingredient['name']
+            name = ingredient['id.__ingredient_name']
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError(
                     f'Не корректное количество для {name}'
