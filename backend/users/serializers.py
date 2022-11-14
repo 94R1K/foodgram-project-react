@@ -1,34 +1,35 @@
-from djoser.serializers import UserSerializer
-from recipes.models import Recipe
-
 import recipes
+from djoser.serializers import UserSerializer
+
+from recipes.models import Recipe
 from rest_framework import serializers
 
-from .models import CustomUser, Subscription
-
-User = CustomUser
+from .models import Subscription, User
 
 
 class CurrentUserSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField(
+        method_name='get_is_subscribed'
+    )
 
     class Meta:
         model = User
         fields = (
-            'id',
             'email',
-            'is_subscribed',
+            'id',
             'username',
             'first_name',
             'last_name',
+            'is_subscribed'
         )
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request in None or request.user.is_anonymous:
+        if request is None or request.user.is_anonymous:
             return False
-        user = request.user
-        return Subscription.objects.filter(author=obj, user=user).exists()
+        return Subscription.objects.filter(
+            user=request.user, author=obj
+        ).exists()
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -66,11 +67,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='author.username')
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
-    is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.IntegerField(
-        source='recipes.count',
-        read_only=True
+    is_subscribed = serializers.SerializerMethodField(
+        method_name='get_is_subscribed'
+    )
+    recipes = serializers.SerializerMethodField(method_name='get_recipes')
+    recipes_count = serializers.SerializerMethodField(
+        method_name='get_recipes_count'
     )
 
     class Meta:
@@ -105,3 +107,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             queryset, read_only=True, many=True
         )
         return serializer.data
+
+    def get_recipes_count(self, obj):
+        return obj.author.recipes.count()
