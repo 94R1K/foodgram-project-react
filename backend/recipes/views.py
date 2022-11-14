@@ -20,15 +20,15 @@ from .utils import convert_txt
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = [AllowAny, ]
+    permission_classes = (AllowAny, )
     filter_class = IngredientFilter
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    permission_classes = [IsOwnerOrReadOnly, ]
+    permission_classes = (IsOwnerOrReadOnly, )
     pagination_class = CustomPagination
-    filter_backends = [DjangoFilterBackend, ]
+    filter_backends = (DjangoFilterBackend, )
     filter_class = TagFilter
 
     def get_serializer_class(self):

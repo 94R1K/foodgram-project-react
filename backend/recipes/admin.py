@@ -50,6 +50,10 @@ class RecipeAdmin(admin.ModelAdmin):
         'id',
         'author',
         'name',
+        'image',
+        'text',
+        'is_favorited',
+        'ingredients',
     )
     search_fields = ('author', 'name')
     list_filter = ('name', 'author', 'tags')
