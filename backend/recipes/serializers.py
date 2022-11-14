@@ -46,13 +46,15 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class AddIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    name = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
     amount = serializers.IntegerField()
 
     class Meta:
         model = IngredientsInRecipe
         fields = (
-            'id',
+            'name',
             'amount'
         )
 
@@ -161,7 +163,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
             )
         unique_ingredients = []
         for ingredient in ingredients:
-            name = ingredient['id'].name
+            name = ingredient['name']
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError(
                     f'Не корректное количество для {name}'
