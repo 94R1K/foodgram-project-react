@@ -1,6 +1,7 @@
 from djoser.serializers import UserSerializer
 from recipes.models import Recipe
-from recipes.serializers import ShortRecipeSerializer
+
+import recipes
 from rest_framework import serializers
 
 from .models import CustomUser, Subscription
@@ -100,7 +101,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         else:
             queryset = Recipe.objects.filter(
                 author=obj.author)
-        serializer = ShortRecipeSerializer(
+        serializer = recipes.serializers.ShortRecipeSerializer(
             queryset, read_only=True, many=True
         )
         return serializer.data
