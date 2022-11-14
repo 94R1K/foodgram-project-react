@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404
-from recipes.pagination import CustomPagination
 from rest_framework import status, views
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from recipes.pagination import CustomPagination
 
 from .models import Subscription, User
 from .serializers import SubscribeSerializer, SubscriptionSerializer

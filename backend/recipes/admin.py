@@ -60,7 +60,6 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     list_filter = ('name', 'author', 'tags')
     readonly_fields = ('is_favorited',)
-    empty_value_display = '-пусто-'
 
     def is_favorited(self, instance):
         return instance.favorite_recipes.count()
