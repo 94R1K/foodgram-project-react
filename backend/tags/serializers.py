@@ -13,3 +13,12 @@ class TagSerializer(serializers.ModelSerializer):
             'color',
             'slug'
         )
+
+
+class TagField(serializers.SlugRelatedField):
+
+    def to_representation(self, value):
+        request = self.context.get('request')
+        context = {'request': request}
+        serializer = TagSerializer(value, context=context)
+        return serializer.data

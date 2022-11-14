@@ -4,7 +4,7 @@ from django.db import models
 class Tag(models.Model):
     name = models.CharField(
         'Имя тега',
-        max_length=128,
+        max_length=255,
         unique=True
     )
     color = models.CharField(
@@ -14,7 +14,7 @@ class Tag(models.Model):
     )
     slug = models.CharField(
         'Ссылка',
-        max_length=128,
+        max_length=50,
         unique=True
     )
 

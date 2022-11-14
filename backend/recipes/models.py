@@ -19,7 +19,7 @@ class Recipe(models.Model):
         verbose_name='Название'
     )
     image = models.ImageField(
-        upload_to='media/',
+        upload_to='backend_media/',
         verbose_name='Изображение'
     )
     text = models.TextField(

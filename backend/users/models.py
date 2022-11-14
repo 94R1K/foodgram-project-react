@@ -9,26 +9,6 @@ class CustomUser(AbstractUser):
         unique=True,
         verbose_name='Почта'
     )
-    username = models.CharField(
-        max_length=150,
-        unique=True,
-        verbose_name='Имя пользователя'
-    )
-    first_name = models.CharField(
-        max_length=150,
-        verbose_name='Имя'
-    )
-    last_name = models.CharField(
-        max_length=150,
-        verbose_name='Фамилия'
-    )
-    password = models.CharField(
-        max_length=150,
-        verbose_name='Пароль'
-    )
-    is_subscribed = models.BooleanField(
-        default=False
-    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
@@ -45,14 +25,14 @@ class CustomUser(AbstractUser):
 User = CustomUser
 
 
-class Follow(models.Model):
+class Subscription(models.Model):
     user = models.ForeignKey(
         User,
         verbose_name='Подписчик',
         related_name='follower',
         on_delete=models.CASCADE,
     )
-    following = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         verbose_name='Подписка',
         related_name='following',
@@ -64,10 +44,10 @@ class Follow(models.Model):
         verbose_name = 'Подписка'
         constraints = [
             models.UniqueConstraint(
-                fields=('user', 'following'),
+                fields=('user', 'author'),
                 name='unique_follow',
             )
         ]
 
     def __str__(self):
-        return f'{self.user} follows {self.following}'
+        return f'{self.user} follows {self.author}'
