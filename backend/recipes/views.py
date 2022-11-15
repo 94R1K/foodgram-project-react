@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 
 from .filters import IngredientFilter, TagFilter
-from .mixins import CustomMixin
 from .models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
                      ShoppingCart)
 from .pagination import CustomPagination
