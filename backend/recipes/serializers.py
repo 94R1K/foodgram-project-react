@@ -124,9 +124,9 @@ class AddRecipeSerializer(serializers.ModelSerializer):
 
     def create_bulk(self, recipe, ingredients_data):
         IngredientsInRecipe.objects.bulk_create([IngredientsInRecipe(
-            ingredient=ingredient['ingredient'],
+            ingredient=ingredient['id'],
             recipe=recipe,
-            amount=int(ingredient['amount'])
+            amount=ingredient['amount']
         ) for ingredient in ingredients_data])
 
     @transaction.atomic
@@ -167,7 +167,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     f'Не корректное количество для {name}'
                 )
-            if not isinstance(ingredient['amount'], int):
+            if not isinstance(int(ingredient['amount']), int):
                 raise serializers.ValidationError(
                     'Количество ингредиентов должно быть целым числом'
                 )
