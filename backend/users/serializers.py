@@ -1,11 +1,14 @@
 import recipes
-
+from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.models import Recipe
 
-from .models import Subscription, User
+from .models import CustomUser, Subscription
+
+User = get_user_model()
 
 
 class CurrentUserSerializer(UserSerializer):
@@ -16,13 +19,15 @@ class CurrentUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = (
-            'email',
             'id',
+            'email',
             'username',
             'first_name',
             'last_name',
+            'password',
             'is_subscribed'
         )
+        extra_kwargs = {"password": {'write_only': True}}
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
@@ -33,44 +38,7 @@ class CurrentUserSerializer(UserSerializer):
         ).exists()
 
 
-class SubscribeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Subscription
-        fields = (
-            'user',
-            'author'
-        )
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
-        serializer = SubscriptionSerializer(
-            instance,
-            context=context
-        )
-        return serializer.data
-
-    def validate(self, data):
-        user = data.get('user')
-        author = data.get('author')
-        if user == author:
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя!'
-            )
-        if Subscription.objects.filter(user=user, author=author).exists():
-            raise serializers.ValidationError(
-                'Вы уже подписаны на этого пользователя!'
-            )
-        return data
-
-
 class SubscriptionSerializer(serializers.ModelSerializer):
-    email = serializers.ReadOnlyField(source='author.email')
-    id = serializers.ReadOnlyField(source='author.id')
-    username = serializers.ReadOnlyField(source='author.username')
-    first_name = serializers.ReadOnlyField(source='author.first_name')
-    last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.IntegerField(
@@ -79,10 +47,10 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Subscription
+        model = User
         fields = (
-            'email',
             'id',
+            'email',
             'username',
             'first_name',
             'last_name',
@@ -91,11 +59,19 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'recipes_count'
         )
 
-    def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        return Subscription.objects.filter(
-            author=obj.author, user=request.user
-        ).exists()
+    def get_is_subscribed(self, user):
+        current_user = self.context.get('current_user')
+        other_user = user.author.all()
+        if user.is_anonymous:
+            return False
+        if other_user.count() == 0:
+            return False
+        if Subscription.objects.filter(
+                user=user,
+                author=current_user
+        ).exists():
+            return True
+        return False
 
     def get_recipes(self, obj):
         request = self.context.get('request')
@@ -110,3 +86,39 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             queryset, read_only=True, many=True
         )
         return serializer.data
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=CustomUser.objects.all(),
+        default=serializers.CurrentUserDefault()
+    )
+    author = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=CustomUser.objects.all(),
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = '__all__'
+        validators = UniqueTogetherValidator(
+            queryset=CustomUser.objects.all(),
+            fields=('user', 'author'),
+            message='Такая подписка уже существует!'
+        )
+
+    def validate(self, data):
+        request = self.context['request']
+        if data['user'] == data['author'] and request.method == 'POST':
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя!'
+            )
+        return data
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        return SubscriptionSerializer(
+            instance.author,
+            context={'request': request}
+        ).data

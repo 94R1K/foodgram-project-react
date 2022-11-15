@@ -198,3 +198,26 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
             'image',
             'cooking_time'
         )
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favorite
+        fields = (
+            'user',
+            'recipe'
+        )
+        validators = [
+            validators.UniqueTogetherValidator(
+                queryset=Favorite.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже добавлен в избранное'
+            )
+        ]
+
+    def to_representation(self, instance):
+        request = self.context['request']
+        return ShortRecipeSerializer(
+            instance.recipe,
+            context={'request': request}
+        ).data

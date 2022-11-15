@@ -1,19 +1,21 @@
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
+from rest_framework import status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 
 from .filters import IngredientFilter, TagFilter
+from .mixins import CustomMixin
 from .models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
                      ShoppingCart)
 from .pagination import CustomPagination
 from .permissions import IsOwnerOrReadOnly
-from .serializers import (AddRecipeSerializer, IngredientSerializer,
-                          RecipeSerializer, ShortRecipeSerializer)
+from .serializers import (AddRecipeSerializer, FavoriteSerializer,
+                          IngredientSerializer, RecipeSerializer,
+                          ShortRecipeSerializer)
 from .utils import convert_txt
 
 
@@ -44,17 +46,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-    @action(
-        detail=True,
-        methods=('post', 'delete'),
-        permission_classes=(IsAuthenticated,)
-    )
-    def favorite(self, request, pk=None):
-        if request.method == 'POST':
-            return self.add_recipe(Favorite, request, pk)
-        else:
-            return self.delete_recipe(Favorite, request, pk)
 
     @action(
         detail=False,
@@ -95,4 +86,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = self.request.user
         obj = get_object_or_404(model, recipe=recipe, user=user)
         obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FavoriteView(views.APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, favorite_id):
+        user = request.user
+        data = {
+            'recipe': favorite_id,
+            'user': user.id
+        }
+        serializer = FavoriteSerializer(
+            data=data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, favorite_id):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=favorite_id)
+        Favorite.objects.filter(user=user, recipe=recipe).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
