@@ -52,7 +52,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = User
+        model = Subscription
         fields = (
             'id',
             'email',
@@ -64,19 +64,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'recipes_count'
         )
 
-    def get_is_subscribed(self, user):
-        current_user = self.context.get('current_user')
-        other_user = user.author.all()
-        if user.is_anonymous:
-            return False
-        if other_user.count() == 0:
-            return False
-        if Subscription.objects.filter(
-                user=user,
-                author=current_user
-        ).exists():
-            return True
-        return False
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        return Subscription.objects.filter(
+            author=obj.author, user=request.user
+        ).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
@@ -94,36 +86,29 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        slug_field='id',
-        queryset=CustomUser.objects.all(),
-        default=serializers.CurrentUserDefault()
-    )
-    author = serializers.SlugRelatedField(
-        slug_field='id',
-        queryset=CustomUser.objects.all(),
-    )
 
     class Meta:
-        model = CustomUser
-        fields = '__all__'
-        validators = UniqueTogetherValidator(
-            queryset=CustomUser.objects.all(),
-            fields=('user', 'author'),
-            message='Такая подписка уже существует!'
-        )
-
-    def validate(self, data):
-        request = self.context['request']
-        if data['user'] == data['author'] and request.method == 'POST':
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя!'
-            )
-        return data
+        model = Subscription
+        fields = ('user', 'author')
 
     def to_representation(self, instance):
         request = self.context.get('request')
-        return SubscriptionSerializer(
-            instance.author,
-            context={'request': request}
-        ).data
+        context = {'request': request}
+        serializer = SubscriptionSerializer(
+            instance,
+            context=context
+        )
+        return serializer.data
+
+    def validate(self, data):
+        user = data.get('user')
+        author = data.get('author')
+        if user == author:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя!'
+            )
+        if Subscription.objects.filter(user=user, author=author).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на этого пользователя!'
+            )
+        return data
