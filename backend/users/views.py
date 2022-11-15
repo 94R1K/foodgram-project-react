@@ -22,17 +22,17 @@ class SubscriptionViewSet(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return CustomUser.objects.filter(author__user=user)
+        return CustomUser.objects.filter(following__user=user)
 
 
 class SubscribeView(views.APIView):
     pagination_class = CustomPagination
     permission_classes = (IsAuthenticated, )
 
-    def post(self, request, author_id):
+    def post(self, request, following_id):
         user = request.user
         data = {
-            'author': author_id,
+            'author': following_id,
             'user': user.id
         }
         serializer = SubscribeSerializer(
@@ -43,8 +43,8 @@ class SubscribeView(views.APIView):
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    def delete(self, request, author_id):
+    def delete(self, request, following_id):
         user = request.user
-        author = get_object_or_404(CustomUser, id=author_id)
+        author = get_object_or_404(CustomUser, id=following_id)
         Subscription.objects.filer(user=user, author=author).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

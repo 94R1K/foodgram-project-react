@@ -22,6 +22,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny, )
+    filter_backends = (DjangoFilterBackend, )
     filter_class = IngredientFilter
 
 
@@ -91,7 +92,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 class FavoriteView(views.APIView):
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request, favorite_id):
+    def post(self, request, favorite_id):
         user = request.user
         data = {
             'recipe': favorite_id,
