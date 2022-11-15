@@ -1,14 +1,10 @@
 import recipes
-from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.models import Recipe
 
 from .models import CustomUser, Subscription
-
-User = get_user_model()
 
 
 class CurrentUserSerializer(UserSerializer):
@@ -17,7 +13,7 @@ class CurrentUserSerializer(UserSerializer):
     )
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = (
             'id',
             'email',
@@ -27,7 +23,6 @@ class CurrentUserSerializer(UserSerializer):
             'password',
             'is_subscribed'
         )
-        extra_kwargs = {"password": {'write_only': True}}
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
