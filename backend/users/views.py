@@ -14,15 +14,9 @@ class SubscriptionViewSet(generics.ListAPIView):
     pagination_class = CustomPagination
     permission_classes = (IsAuthenticated, )
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        request = self.request
-        context.update({'request': request})
-        return context
-
     def get_queryset(self):
         user = self.request.user
-        return CustomUser.objects.filter(following__user=user)
+        return user.follower.all()
 
 
 class SubscribeView(views.APIView):
