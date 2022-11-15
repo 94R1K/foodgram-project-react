@@ -126,7 +126,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         IngredientsInRecipe.objects.bulk_create([IngredientsInRecipe(
             ingredient=ingredient['ingredient'],
             recipe=recipe,
-            amount=ingredient['amount']
+            amount=int(ingredient['amount'])
         ) for ingredient in ingredients_data])
 
     @transaction.atomic

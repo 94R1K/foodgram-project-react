@@ -43,8 +43,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return context
 
     def perform_create(self, serializer):
-        user = self.request.user
-        serializer.save(author=user)
+        serializer.save(author=self.request.user)
 
     @action(
         detail=True,
