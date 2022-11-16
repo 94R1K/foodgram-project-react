@@ -7,10 +7,10 @@ class CustomUser(AbstractUser):
         db_index=True,
         max_length=254,
         unique=True,
-        verbose_name='email'
+        verbose_name='Почта'
     )
 
-    USERNAME_FIELD = 'Почта'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
