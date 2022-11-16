@@ -59,7 +59,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer()
     tags = TagSerializer(
         queryset=Tag.objects.all(),
-        ead_only=True,
         many=True
     )
     ingredients = IngredientInRecipeSerializer(
