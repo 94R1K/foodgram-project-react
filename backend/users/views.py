@@ -40,5 +40,10 @@ class SubscribeView(views.APIView):
     def delete(self, request, following_id):
         user = request.user
         author = get_object_or_404(CustomUser, id=following_id)
-        Subscription.objects.filer(user=user, author=author).delete()
+        subscription = get_object_or_404(
+            Subscription,
+            user=user,
+            author=author
+        )
+        subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
