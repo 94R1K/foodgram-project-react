@@ -8,28 +8,33 @@ from recipes.models import Recipe
 from .models import CustomUser, Subscription
 
 
-class CurrentUserSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField()
+class SubscribeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = CustomUser
-        fields = (
-            'id',
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'password',
-            'is_subscribed'
-        )
+        model = Subscription
+        fields = ('user', 'author')
 
-    def get_is_subscribed(self, obj):
+    def to_representation(self, instance):
         request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return Subscription.objects.filter(
-            user=request.user, author=obj
-        ).exists()
+        context = {'request': request}
+        serializer = SubscriptionSerializer(
+            instance,
+            context=context
+        )
+        return serializer.data
+
+    def validate(self, data):
+        user = data.get('user')
+        author = data.get('author')
+        if user == author:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя!'
+            )
+        if Subscription.objects.filter(user=user, author=author).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на этого пользователя!'
+            )
+        return data
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
@@ -40,7 +45,10 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(
+        source='recipes.count',
+        read_only=True
+    )
 
     class Meta:
         model = Subscription
@@ -75,34 +83,26 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         )
         return serializer.data
 
-    def get_recipes_count(self, obj):
-        return obj.author.recipes.count()
 
-
-class SubscribeSerializer(serializers.ModelSerializer):
+class CurrentUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
-        model = Subscription
-        fields = ('user', 'author')
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
-        serializer = SubscriptionSerializer(
-            instance,
-            context=context
+        model = CustomUser
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
+            'is_subscribed'
         )
-        return serializer.data
 
-    def validate(self, data):
-        user = data.get('user')
-        author = data.get('author')
-        if user == author:
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя!'
-            )
-        if Subscription.objects.filter(user=user, author=author).exists():
-            raise serializers.ValidationError(
-                'Вы уже подписаны на этого пользователя!'
-            )
-        return data
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
+            return False
+        return Subscription.objects.filter(
+            user=request.user, author=obj
+        ).exists()
