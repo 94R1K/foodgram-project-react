@@ -23,9 +23,9 @@ class SubscribeView(views.APIView):
     pagination_class = CustomPagination
     permission_classes = (IsAuthenticated, )
 
-    def post(self, request, following_id):
+    def post(self, request, pk):
         user = self.request.user
-        author = get_object_or_404(CustomUser, following_id=following_id)
+        author = get_object_or_404(CustomUser, pk=pk)
         data = {
             'author': author.id,
             'user': user.id
@@ -38,9 +38,9 @@ class SubscribeView(views.APIView):
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    def delete(self, request, following_id):
+    def delete(self, request, pk):
         user = self.request.user
-        author = get_object_or_404(CustomUser, following_id=following_id)
+        author = get_object_or_404(CustomUser, pk=pk)
         subscription = get_object_or_404(
             Subscription,
             user=user,
