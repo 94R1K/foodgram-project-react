@@ -7,7 +7,10 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECRET_KEY = os.getenv('SECRET_KEY', default='*ude%#7!h&^bhpml7ld9(pcbq@l0%a1-r(c))t%pevw7gy9d8n')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    default='*ude%#7!h&^bhpml7ld9(pcbq@l0%a1-r(c))t%pevw7gy9d8n'
+)
 
 DEBUG = True
 
@@ -118,11 +121,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
 }
 

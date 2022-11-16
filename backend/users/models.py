@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
         db_index=True,
         max_length=254,
         unique=True,
-        verbose_name='Почта'
+        verbose_name='email'
     )
 
     USERNAME_FIELD = 'email'
@@ -16,10 +16,9 @@ class CustomUser(AbstractUser):
     class Meta:
         verbose_name_plural = 'Пользователи'
         verbose_name = 'Пользователь'
-        ordering = ['id']
 
     def __str__(self):
-        return f'Пользователь {self.username}'
+        return f'User {self.username}'
 
 
 User = CustomUser

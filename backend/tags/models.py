@@ -1,3 +1,4 @@
+from colorfield.fields import ColorField
 from django.db import models
 
 
@@ -5,17 +6,18 @@ class Tag(models.Model):
     name = models.CharField(
         'Имя тега',
         max_length=255,
-        unique=True
+        unique=True,
+        verbose_name='Имя тега'
     )
-    color = models.CharField(
-        'Цвет',
-        max_length=7,
-        unique=True
+    color = ColorField(
+        max_length=8,
+        unique=True,
+        verbose_name='Цвет'
     )
     slug = models.CharField(
-        'Ссылка',
         max_length=50,
-        unique=True
+        unique=True,
+        verbose_name='Ссылка'
     )
 
     class Meta:

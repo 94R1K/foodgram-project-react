@@ -4,9 +4,14 @@ from .models import Tag
 
 
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'color', 'slug')
-    search_fields = ('name', )
-    list_filter = ('slug', )
+    list_display = (
+        'pk',
+        'name',
+        'color',
+        'slug'
+    )
+    search_fields = ('name', 'color', 'slug')
+    list_editable = ('color', )
     empty_value_display = '-пусто-'
 
 

@@ -3,7 +3,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 
 from tags.models import Tag
-from tags.serializers import TagSerializer
+from tags.serializers import TagField
 from users.serializers import CurrentUserSerializer
 
 from .models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
@@ -57,7 +57,9 @@ class AddIngredientSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer()
-    tags = TagSerializer(read_only=True, many=True)
+    tags = TagField(
+        slug_field='id', queryset=Tag.objects.all(), many=True
+    )
     ingredients = IngredientInRecipeSerializer(
         source='ingredient_in_recipe',
         read_only=True, many=True
@@ -112,6 +114,10 @@ class AddRecipeSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time'
         )
+
+    def to_representation(self, instance):
+        serializer = RecipeSerializer(instance)
+        return serializer.data
 
     def create_bulk(self, recipe, ingredients_data):
         IngredientsInRecipe.objects.bulk_create([IngredientsInRecipe(
@@ -168,14 +174,6 @@ class AddRecipeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'В рецепте не может быть повторяющихся ингредиентов'
                 )
-        return data
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = RecipeSerializer(
-            instance,
-            context={'request': request}
-        ).data
         return data
 
 

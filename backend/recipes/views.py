@@ -22,7 +22,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny, )
-    filter_backends = (DjangoFilterBackend, )
     filter_class = IngredientFilter
 
 
@@ -31,18 +30,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly, )
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend, )
-    filter_class = TagFilter
+    filterset_class = TagFilter
 
     def get_serializer_class(self):
-        if self.request.method in ('POST', 'PUT', 'PATCH'):
-            return AddRecipeSerializer
-        return RecipeSerializer
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        request = self.request
-        context.update({'request': request})
-        return context
+        if self.action in ('list', 'retrieve'):
+            return RecipeSerializer
+        return AddRecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

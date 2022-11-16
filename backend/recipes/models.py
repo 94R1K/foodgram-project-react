@@ -39,7 +39,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         db_index=True,
-        verbose_name='Хэштег',
+        verbose_name='Хештег',
         related_name='recipes'
     )
     cooking_time = models.PositiveSmallIntegerField(
@@ -126,10 +126,6 @@ class Favorite(models.Model):
         related_name='users_favorites',
         on_delete=models.CASCADE
     )
-    added = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Дата добавления в избранное'
-    )
 
     class Meta:
         verbose_name_plural = 'Избранные'
@@ -157,10 +153,6 @@ class ShoppingCart(models.Model):
         verbose_name='Покупка',
         related_name='shopping_cart',
         on_delete=models.CASCADE
-    )
-    added = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Дата добавления в список покупок'
     )
 
     class Meta:
