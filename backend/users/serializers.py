@@ -28,7 +28,7 @@ class CurrentUserSerializer(UserSerializer):
         if request is None or request.user.is_anonymous:
             return False
         return Subscription.objects.filter(
-            user=request.user, author=obj.author
+            user=request.user, author=obj
         ).exists()
 
 
