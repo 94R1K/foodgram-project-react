@@ -10,7 +10,7 @@ class CustomUser(AbstractUser):
         verbose_name='email'
     )
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'Почта'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
         verbose_name = 'Пользователь'
 
     def __str__(self):
-        return f'User {self.username}'
+        return self.username
 
 
 User = CustomUser

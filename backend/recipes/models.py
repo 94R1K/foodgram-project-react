@@ -89,17 +89,24 @@ class IngredientsInRecipe(models.Model):
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Рецепты',
-        related_name='ingredients_list'
+        related_name='ingredients_list',
+        null=False,
+        blank=False
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Ингредиенты',
-        related_name='ingredient_in_recipe'
+        related_name='ingredient_in_recipe',
+        null=False,
+        blank=False
     )
     amount = models.PositiveSmallIntegerField(
+        default=1,
         validators=[MinValueValidator(1)],
-        verbose_name='Количество ингредиентов'
+        verbose_name='Количество ингредиентов',
+        null=False,
+        blank=False
     )
 
     class Meta:
