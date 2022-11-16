@@ -67,10 +67,10 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        if request.GET.get('recipe_limit'):
-            recipe_limit = int(request.GET.get('recipe_limit'))
+        if request.GET.get('recipes_limit'):
+            recipes_limit = int(request.GET.get('recipes_limit'))
             queryset = Recipe.objects.filter(
-                author=obj.author)[:recipe_limit]
+                author=obj.author)[:recipes_limit]
         else:
             queryset = Recipe.objects.filter(
                 author=obj.author)

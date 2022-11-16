@@ -68,7 +68,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField(default=0)
 
     class Meta:
         model = Recipe
@@ -201,6 +201,7 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Favorite
         fields = (
