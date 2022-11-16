@@ -8,6 +8,30 @@ from recipes.models import Recipe
 from .models import CustomUser, Subscription
 
 
+class CurrentUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
+            'is_subscribed'
+        )
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
+            return False
+        return Subscription.objects.filter(
+            user=request.user, author=obj.author
+        ).exists()
+
+
 class SubscribeSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -82,27 +106,3 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             queryset, read_only=True, many=True
         )
         return serializer.data
-
-
-class CurrentUserSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CustomUser
-        fields = (
-            'id',
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'password',
-            'is_subscribed'
-        )
-
-    def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return Subscription.objects.filter(
-            user=request.user, author=obj
-        ).exists()
