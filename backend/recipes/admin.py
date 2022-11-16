@@ -23,8 +23,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'recipe',
-        'added'
+        'recipe'
     )
     search_fields = (
         'user__username',
@@ -69,8 +68,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'recipe',
-        'added'
+        'recipe'
     )
     search_fields = (
         'user__username',
