@@ -6,7 +6,7 @@ from .models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
 
 class IngredientsInRecipeInline(admin.TabularInline):
     model = Recipe.ingredients.through
-    extra = 1
+    min_num = 1
 
 
 class IngredientsInRecipeAdmin(admin.ModelAdmin):
@@ -58,7 +58,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'author__email'
     )
     list_filter = ('name', 'author', 'tags')
-    readonly_fields = ('is_favorited',)
 
     def is_favorited(self, instance):
         return instance.favorite_recipes.count()

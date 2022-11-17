@@ -29,8 +29,7 @@ class Recipe(models.Model):
         'Ingredient',
         through='IngredientsInRecipe',
         through_fields=('recipe', 'ingredient'),
-        verbose_name='Ингредиенты',
-        blank=False
+        verbose_name='Ингредиенты'
     )
     pub_date = models.DateTimeField(
         db_index=True,
@@ -62,15 +61,11 @@ class Ingredient(models.Model):
     name = models.CharField(
         max_length=255,
         db_index=True,
-        verbose_name='Название ингредиента',
-        blank=False,
-        null=False
+        verbose_name='Название ингредиента'
     )
     measurement_unit = models.CharField(
         max_length=50,
-        verbose_name='Единица измерения',
-        blank=False,
-        null=False
+        verbose_name='Единица измерения'
     )
 
     class Meta:
@@ -93,24 +88,18 @@ class IngredientsInRecipe(models.Model):
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Рецепты',
-        related_name='ingredients_list',
-        null=False,
-        blank=False
+        related_name='ingredients_list'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Ингредиенты',
-        related_name='ingredient_in_recipe',
-        null=False,
-        blank=False
+        related_name='ingredient_in_recipe'
     )
     amount = models.PositiveSmallIntegerField(
         default=1,
         validators=[MinValueValidator(1)],
-        verbose_name='Количество ингредиентов',
-        null=False,
-        blank=False
+        verbose_name='Количество ингредиентов'
     )
 
     class Meta:
