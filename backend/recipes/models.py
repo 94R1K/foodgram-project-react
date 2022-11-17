@@ -30,7 +30,6 @@ class Recipe(models.Model):
         through='IngredientsInRecipe',
         through_fields=('recipe', 'ingredient'),
         verbose_name='Ингредиенты',
-        null=False,
         blank=False
     )
     pub_date = models.DateTimeField(
@@ -63,11 +62,15 @@ class Ingredient(models.Model):
     name = models.CharField(
         max_length=255,
         db_index=True,
-        verbose_name='Название ингредиента'
+        verbose_name='Название ингредиента',
+        blank=False,
+        null=False
     )
     measurement_unit = models.CharField(
         max_length=50,
-        verbose_name='Единица измерения'
+        verbose_name='Единица измерения',
+        blank=False,
+        null=False
     )
 
     class Meta:
