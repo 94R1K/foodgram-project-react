@@ -4,11 +4,13 @@
 
 # Развернутый проект можно посмотреть по ссылкам:
 http://158.160.6.170 \
-http://158.160.6.170/admin/ 
+http://158.160.6.170/admin/  
+http://158.160.6.170/api/docs/
 
-Данные для входа в admin-панель:
-* Почта: real-man228@yandex.ru
-* Пароль: 20031956
+### Данные для входа в admin-панель:
+* **Почта**: real-man228@yandex.ru
+* **Пароль**: 20031956
+
 # Социальная сеть для любителей Кулинарии: «Foodgram»
 
 ## Описание
@@ -18,7 +20,7 @@ http://158.160.6.170/admin/
 лучшие рецепты в избранное, а также создавать список покупок и загружать его
 в txt формате. Также присутствует файл docker-compose, позволяющий, 
 быстро развернуть контейнер базы данных (PostgreSQL), контейнер проекта 
-django + gunicorn и контейнер nginx
+django + gunicorn и контейнер nginx.
 
 ## Стек технологий
 [![Python](https://img.shields.io/badge/-Python-464646?style=flat-square&logo=Python)](https://www.python.org/)
@@ -32,10 +34,14 @@ django + gunicorn и контейнер nginx
 [![Yandex.Cloud](https://img.shields.io/badge/-Yandex.Cloud-464646?style=flat-square&logo=Yandex.Cloud)](https://cloud.yandex.ru/)
 
 ## Kак запустить
+
 ### Клонируем проект:
+```shell
 git clone https://github.com/94R1K/foodgram-project-react.git
+```
 
 ### Для добавления файла .env с настройками базы данных на сервер необходимо:
+
 ### Установить соединение с сервером по протоколу ssh:
 ```shell
 ssh username@server_address
@@ -94,7 +100,7 @@ git commit -m "..."
 git push
 ```
 Команда **git push** является триггером workflow проекта.\
-При выполнении команды **git push** запустится набор блоков команд jobs.\
+При выполнении команды **git push** запустится набор блоков команд jobs.
 
 ### Последовательно будут выполнены следующие блоки:
 **tests** - тестирование проекта на соответствие PEP8 и тестам pytest.
@@ -106,15 +112,18 @@ git push
 Происходит копирование следующих файлов с репозитория на сервер:
 
 ### docker-compose.yaml, необходимый для сборки трех контейнеров:
-  * **postgres** - контейнер базы данных
-  * **web** - контейнер Django приложения + wsgi-сервер gunicorn
-  * **nginx** - веб-сервер
+  * **postgres** - контейнер базы данных;
+  * **web** - контейнер Django приложения + wsgi-сервер gunicorn;
+  * **nginx** - веб-сервер.
+
 ### nginx/default.conf - файл кофигурации nginx сервера
-### static - папка со статическими файлами проекта
+
+### static_backend/ - папка со статическими файлами проекта
 После копирования, происходит установка docker и docker-compose на сервере и начинается сборка и запуск контейнеров.
 
 **send_message** - после сборки и запуска контейнеров происходит отправка сообщения 
-в телеграм об успешном окончании workflow\
+в телеграм об успешном окончании workflow.
+
 ### После выполнения вышеуказанных процедур необходимо установить соединение с сервером:
 ```shell
 ssh username@server_address
@@ -134,46 +143,9 @@ sudo docker container ls
 | 2a0bf05071ba  | postgres:12.4                    | "docker-entrypoint.s…" | 8 minutes ago | Exited (137) 2 minutes ago |         | dfadeev-zld_db_1    |
 | 7caa47e8ad7e  | username/foodgram_frontend:v1.0  | "docker-entrypoint.s…" | 8 minutes ago | Exited (0) 7 minutes ago   |         | username_frontend_1 |
 
-### Выполнить вход в контейнер:
+### Выполнить создание суперпользователя:
 ```shell
-sudo docker exec -it d3eb395676c6 bash
-```
-
-### Внутри контейнера выполнить миграции:
-```shell
-python manage.py migrate
-```
-### Также можно наполнить базу данных начальными тестовыми данными:
-```shell
-python3 manage.py shell
-```
-
-```shell
-from django.contrib.contenttypes.models import ContentType
-```
-
-```shell
-ContentType.objects.all().delete()
-```
-
-```shell
-quit()
-```
-
-```shell
-python manage.py loaddata dump.json
-```
-
-Теперь проекту доступна статика.\
-В админке Django **(http://<server_address>/admin)** доступно управление данными. 
-Если загрузить фикструры, то будет доступен ***superuser***:
-* user: **Admin**
-* password: **admin**
-* email: **admin@admin.com**
-
-### Для создания нового суперпользователя можно выполнить команду:
-```shell
-python manage.py createsuperuser
+sudo docker exec -it d3eb395676c6 python manage.py createsuperuser
 ```
 
 ### Для остановки и удаления контейнеров и образов на сервере:
@@ -187,4 +159,4 @@ Python-разработчик (Backend) \
 Россия, г. Москва \
 E-mail: real-man228@yandex.ru \
 VK: https://vk.com/94r1k \
-Telegram: @y4r1kl
+Telegram: https://t.me/y4r1kl

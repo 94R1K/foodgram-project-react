@@ -29,12 +29,14 @@ class Recipe(models.Model):
         'Ingredient',
         through='IngredientsInRecipe',
         through_fields=('recipe', 'ingredient'),
-        verbose_name='Ингредиенты'
+        verbose_name='Ингредиенты',
+        null=False,
+        blank=False
     )
     pub_date = models.DateTimeField(
-        'Дата публикации',
+        db_index=True,
         auto_now_add=True,
-        db_index=True
+        verbose_name='Дата публикации'
     )
     tags = models.ManyToManyField(
         Tag,
@@ -43,15 +45,14 @@ class Recipe(models.Model):
         related_name='recipes'
     )
     cooking_time = models.PositiveSmallIntegerField(
-        null=False,
         default=1,
         validators=[MinValueValidator(1)],
         verbose_name='Время приготовления'
     )
 
     class Meta:
-        verbose_name_plural = 'Рецепты'
         verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
         ordering = ['-pub_date']
 
     def __str__(self):
@@ -70,8 +71,8 @@ class Ingredient(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = 'Ингредиенты'
         verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
         ordering = ['name']
         constraints = [
             models.UniqueConstraint(
@@ -135,8 +136,8 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = 'Избранные'
         verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные'
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],
@@ -163,8 +164,8 @@ class ShoppingCart(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = 'Покупки'
         verbose_name = 'Покупка'
+        verbose_name_plural = 'Покупки'
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],

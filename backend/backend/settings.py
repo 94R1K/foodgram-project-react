@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv(
     default='*ude%#7!h&^bhpml7ld9(pcbq@l0%a1-r(c))t%pevw7gy9d8n'
 )
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '158.160.6.170',
