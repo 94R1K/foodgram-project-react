@@ -159,17 +159,17 @@ class AddRecipeSerializer(serializers.ModelSerializer):
             )
         unique_ingredients = []
         for ingredient in ingredients:
-            name = ingredient['id']
+            id_ingredient = ingredient['id']
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError(
-                    f'Не корректное количество для {name}'
+                    f'Не корректное количество для {id_ingredient}'
                 )
             if not isinstance(int(ingredient['amount']), int):
                 raise serializers.ValidationError(
                     'Количество ингредиентов должно быть целым числом'
                 )
-            if name not in unique_ingredients:
-                unique_ingredients.append(name)
+            if id_ingredient not in unique_ingredients:
+                unique_ingredients.append(id_ingredient)
             else:
                 raise serializers.ValidationError(
                     'В рецепте не может быть повторяющихся ингредиентов'
