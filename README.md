@@ -2,11 +2,6 @@
 
 ![example workflow](https://github.com/94R1K/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
-# Развернутый проект можно посмотреть по ссылкам:
-http://158.160.6.170 \
-http://158.160.6.170/admin/  
-http://158.160.6.170/api/docs/
-
 # Социальная сеть для любителей Кулинарии: «Foodgram»
 
 ## Описание
@@ -153,6 +148,7 @@ sudo docker stop $(sudo docker ps -a -q) && sudo docker rm $(sudo docker ps -a -
 Лошкарев Ярослав Эдуардович \
 Python-разработчик (Backend) \
 Россия, г. Москва \
-E-mail: real-man228@yandex.ru \
-VK: https://vk.com/94r1k \
-Telegram: https://t.me/y4r1kl
+E-mail: real-man228@yandex.ru 
+
+[![VK](https://img.shields.io/badge/Вконтакте-%232E87FB.svg?&style=for-the-badge&logo=vk&logoColor=white)](https://vk.com/yalluv)
+[![TG](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/yallluv)
